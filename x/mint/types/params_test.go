@@ -16,6 +16,8 @@ func TestDefaultParams_ValidateOK(t *testing.T) {
 
 func TestNewParams_Validate(t *testing.T) {
 	t.Parallel()
+	maxSupply, ok := sdkmath.NewIntFromString("1000000000000000000000000")
+	require.True(t, ok)
 
 	tests := []struct {
 		name        string
@@ -32,6 +34,7 @@ func TestNewParams_Validate(t *testing.T) {
 				sdkmath.LegacyMustNewDecFromStr("0.07"),
 				sdkmath.LegacyMustNewDecFromStr("0.67"),
 				uint64(60*60*8766/5),
+				maxSupply,
 			),
 			wantErr:     false,
 			errContains: "",
@@ -45,6 +48,7 @@ func TestNewParams_Validate(t *testing.T) {
 				sdkmath.LegacyMustNewDecFromStr("0.06"),
 				sdkmath.LegacyMustNewDecFromStr("0.67"),
 				1,
+				maxSupply,
 			),
 			wantErr:     true,
 			errContains: "must be greater than or equal to min inflation",
@@ -58,6 +62,7 @@ func TestNewParams_Validate(t *testing.T) {
 				sdkmath.LegacyMustNewDecFromStr("0.07"),
 				sdkmath.LegacyMustNewDecFromStr("0.67"),
 				1,
+				maxSupply,
 			),
 			wantErr:     true,
 			errContains: "",
@@ -71,6 +76,7 @@ func TestNewParams_Validate(t *testing.T) {
 				sdkmath.LegacyMustNewDecFromStr("0.07"),
 				sdkmath.LegacyMustNewDecFromStr("1.01"),
 				1,
+				maxSupply,
 			),
 			wantErr:     true,
 			errContains: "",
@@ -84,6 +90,7 @@ func TestNewParams_Validate(t *testing.T) {
 				sdkmath.LegacyMustNewDecFromStr("0.07"),
 				sdkmath.LegacyMustNewDecFromStr("0.67"),
 				0,
+				maxSupply,
 			),
 			wantErr:     true,
 			errContains: "",
