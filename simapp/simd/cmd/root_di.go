@@ -11,6 +11,7 @@ import (
 	stakingv1 "cosmossdk.io/api/cosmos/staking/module/v1"
 	"cosmossdk.io/client/v2/autocli"
 	"cosmossdk.io/core/address"
+	"cosmossdk.io/core/legacy"
 	"cosmossdk.io/depinject"
 	"cosmossdk.io/log"
 	"cosmossdk.io/simapp"
@@ -97,7 +98,7 @@ func ProvideClientContext(
 	appCodec codec.Codec,
 	interfaceRegistry codectypes.InterfaceRegistry,
 	txConfigOpts tx.ConfigOptions,
-	legacyAmino *codec.LegacyAmino,
+	legacyAmino legacy.Amino,
 	addressCodec address.Codec,
 	validatorAddressCodec address.ValidatorAddressCodec,
 	consensusAddressCodec address.ConsensusAddressCodec,
@@ -106,10 +107,15 @@ func ProvideClientContext(
 ) client.Context {
 	var err error
 
+	amino, ok := legacyAmino.(*codec.LegacyAmino)
+	if !ok {
+		panic("ProvideClientContext requires a *codec.LegacyAmino instance")
+	}
+
 	clientCtx := client.Context{}.
 		WithCodec(appCodec).
 		WithInterfaceRegistry(interfaceRegistry).
-		WithLegacyAmino(legacyAmino).
+		WithLegacyAmino(amino).
 		WithInput(os.Stdin).
 		WithAccountRetriever(types.AccountRetriever{}).
 		WithAddressCodec(addressCodec).

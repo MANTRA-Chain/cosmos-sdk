@@ -170,7 +170,7 @@ func (k Keeper) withdrawRecipientFunds(ctx context.Context, recipientAddr string
 	withdrawnAmount := sdk.NewCoin(denom, fundsAllocated)
 	err = k.DistributeFromStreamFunds(ctx, sdk.NewCoins(withdrawnAmount), recipient)
 	if err != nil {
-		return sdk.Coin{}, fmt.Errorf("error while distributing funds to the recipient %s: %v", recipientAddr, err)
+		return sdk.Coin{}, fmt.Errorf("error while distributing funds to the recipient %s: %w", recipientAddr, err)
 	}
 
 	// reset fund distribution
@@ -220,7 +220,7 @@ func (k Keeper) SetToDistribute(ctx context.Context, amount sdk.Coins, addr stri
 
 	err = k.ToDistribute.Set(ctx, amount.AmountOf(denom))
 	if err != nil {
-		return fmt.Errorf("error while setting ToDistribute: %v", err)
+		return fmt.Errorf("error while setting ToDistribute: %w", err)
 	}
 	return nil
 }
@@ -254,11 +254,15 @@ func (k Keeper) hasPermission(addr []byte) (bool, error) {
 	return bytes.Equal(authAcc, addr), nil
 }
 
+type recipientFund struct {
+	RecipientAddr string
+	Percentage    math.Int
+}
+
 func (k Keeper) iterateAndUpdateFundsDistribution(ctx context.Context, toDistributeAmount math.Int) error {
 	totalPercentageToBeDistributed := math.ZeroInt()
 
-	// Create a map to store keys & values from RecipientFundPercentage during the first iteration
-	recipientFundMap := make(map[string]math.Int)
+	recipientFundList := []recipientFund{}
 
 	// Calculate totalPercentageToBeDistributed and store values
 	err := k.RecipientFundPercentage.Walk(ctx, nil, func(key sdk.AccAddress, value math.Int) (stop bool, err error) {
@@ -267,7 +271,10 @@ func (k Keeper) iterateAndUpdateFundsDistribution(ctx context.Context, toDistrib
 			return true, err
 		}
 		totalPercentageToBeDistributed = totalPercentageToBeDistributed.Add(value)
-		recipientFundMap[addr] = value
+		recipientFundList = append(recipientFundList, recipientFund{
+			RecipientAddr: addr,
+			Percentage:    value,
+		})
 		return false, nil
 	})
 	if err != nil {
@@ -287,14 +294,14 @@ func (k Keeper) iterateAndUpdateFundsDistribution(ctx context.Context, toDistrib
 	totalAmountToBeDistributed := toDistributeDec.MulDec(math.LegacyNewDecFromIntWithPrec(totalPercentageToBeDistributed, 2))
 	totalDistrAmount := totalAmountToBeDistributed.AmountOf(denom)
 
-	for keyStr, value := range recipientFundMap {
+	for _, value := range recipientFundList {
 		// Calculate the funds to be distributed based on the percentage
-		decValue := math.LegacyNewDecFromIntWithPrec(value, 2)
+		decValue := math.LegacyNewDecFromIntWithPrec(value.Percentage, 2)
 		percentage := math.LegacyNewDecFromIntWithPrec(totalPercentageToBeDistributed, 2)
 		recipientAmount := totalDistrAmount.Mul(decValue).Quo(percentage)
 		recipientCoins := recipientAmount.TruncateInt()
 
-		key, err := k.authKeeper.AddressCodec().StringToBytes(keyStr)
+		key, err := k.authKeeper.AddressCodec().StringToBytes(value.RecipientAddr)
 		if err != nil {
 			return err
 		}
