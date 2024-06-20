@@ -89,6 +89,18 @@ func NewBaseKeeper(
 	authority string,
 	logger log.Logger,
 ) BaseKeeper {
+	return NewBaseKeeperWithGuard(cdc, storeService, ak, blockedAddrs, authority, logger, nil)
+}
+
+func NewBaseKeeperWithGuard(
+	cdc codec.BinaryCodec,
+	storeService store.KVStoreService,
+	ak types.AccountKeeper,
+	blockedAddrs map[string]bool,
+	authority string,
+	logger log.Logger,
+	gk types.GuardKeeper,
+) BaseKeeper {
 	if _, err := ak.AddressCodec().StringToBytes(authority); err != nil {
 		panic(fmt.Errorf("invalid bank authority address: %w", err))
 	}
@@ -97,7 +109,7 @@ func NewBaseKeeper(
 	logger = logger.With(log.ModuleKey, "x/"+types.ModuleName)
 
 	return BaseKeeper{
-		BaseSendKeeper:         NewBaseSendKeeper(cdc, storeService, ak, blockedAddrs, authority, logger),
+		BaseSendKeeper:         NewBaseSendKeeper(cdc, storeService, ak, blockedAddrs, authority, logger, gk),
 		ak:                     ak,
 		cdc:                    cdc,
 		storeService:           storeService,

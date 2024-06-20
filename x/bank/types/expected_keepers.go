@@ -33,3 +33,7 @@ type AccountKeeper interface {
 	SetModuleAccount(ctx context.Context, macc sdk.ModuleAccountI)
 	GetModulePermissions() map[string]types.PermissionsForAddress
 }
+
+type GuardKeeper interface {
+	ValidateCoinsTransfers(ctx context.Context, inputs []Input, outputs []Output) error
+}

@@ -69,6 +69,8 @@ type BaseSendKeeper struct {
 	authority string
 
 	sendRestriction *sendRestriction
+
+	gk types.GuardKeeper
 }
 
 func NewBaseSendKeeper(
@@ -78,6 +80,7 @@ func NewBaseSendKeeper(
 	blockedAddrs map[string]bool,
 	authority string,
 	logger log.Logger,
+	gk types.GuardKeeper,
 ) BaseSendKeeper {
 	if _, err := ak.AddressCodec().StringToBytes(authority); err != nil {
 		panic(fmt.Errorf("invalid bank authority address: %w", err))
@@ -92,6 +95,7 @@ func NewBaseSendKeeper(
 		authority:       authority,
 		logger:          logger,
 		sendRestriction: newSendRestriction(),
+		gk:              gk,
 	}
 }
 
@@ -145,6 +149,12 @@ func (k BaseSendKeeper) InputOutputCoins(ctx context.Context, input types.Input,
 	// Check supply invariant and validity of Coins.
 	if err := types.ValidateInputOutputs(input, outputs); err != nil {
 		return err
+	}
+
+	if k.gk != nil {
+		if err := k.gk.ValidateCoinsTransfers(ctx, []types.Input{input}, outputs); err != nil {
+			return err
+		}
 	}
 
 	inAddress, err := k.ak.AddressCodec().StringToBytes(input.Address)
@@ -207,6 +217,17 @@ func (k BaseSendKeeper) InputOutputCoins(ctx context.Context, input types.Input,
 // An error is returned upon failure.
 func (k BaseSendKeeper) SendCoins(ctx context.Context, fromAddr, toAddr sdk.AccAddress, amt sdk.Coins) error {
 	var err error
+
+	if k.gk != nil {
+		if err := k.gk.ValidateCoinsTransfers(
+			ctx,
+			[]types.Input{{Address: fromAddr.String(), Coins: amt}},
+			[]types.Output{{Address: toAddr.String(), Coins: amt}},
+		); err != nil {
+			return err
+		}
+	}
+
 	err = k.subUnlockedCoins(ctx, fromAddr, amt)
 	if err != nil {
 		return err
