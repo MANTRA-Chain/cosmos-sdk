@@ -52,8 +52,8 @@ func TestMigrateJSON(t *testing.T) {
 		"base_proposer_reward": "0.000000000000000000",
 		"bonus_proposer_reward": "0.000000000000000000",
 		"community_tax": "0.020000000000000000",
-		"mca_tax": "0.400000000000000000",
 		"mca_address": "cosmos15m77x4pe6w9vtpuqm22qxu0ds7vn4ehz9dd9u2",
+		"mca_tax": "0.400000000000000000",
 		"withdraw_addr_enabled": true
 	},
 	"previous_proposer": "",
