@@ -13,6 +13,7 @@ func DefaultParams() Params {
 		BaseProposerReward:  math.LegacyZeroDec(),            // deprecated
 		BonusProposerReward: math.LegacyZeroDec(),            // deprecated
 		WithdrawAddrEnabled: true,
+		McaTax:              math.LegacyNewDecWithPrec(40, 2), // 40%
 	}
 }
 
