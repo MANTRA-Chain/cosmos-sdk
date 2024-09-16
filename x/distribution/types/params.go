@@ -15,7 +15,7 @@ func DefaultParams() Params {
 		BonusProposerReward: math.LegacyZeroDec(),            // deprecated
 		WithdrawAddrEnabled: true,
 		McaTax:              math.LegacyNewDecWithPrec(40, 2),                // 40%
-		McaAddress:          "mantra15m77x4pe6w9vtpuqm22qxu0ds7vn4ehzwx8pls", // TODO: change this to the actual mca address
+		McaAddress:          "cosmos15m77x4pe6w9vtpuqm22qxu0ds7vn4ehz9dd9u2", // TODO: change this to the actual mca address
 	}
 }
 
