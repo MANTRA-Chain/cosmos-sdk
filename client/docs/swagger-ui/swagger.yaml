@@ -9902,6 +9902,10 @@ paths:
                       in the x/distribution module's reward mechanism.
                   withdraw_addr_enabled:
                     type: boolean
+                  mca_tax:
+                    type: string
+                  mca_address:
+                    type: string
             description: >-
               QueryParamsResponse is the response type for the Query/Params RPC
               method.
@@ -47675,6 +47679,10 @@ definitions:
           in the x/distribution module's reward mechanism.
       withdraw_addr_enabled:
         type: boolean
+      mca_tax:
+        type: string
+      mca_address:
+        type: string
     description: Params defines the set of params for the distribution module.
   cosmos.distribution.v1beta1.QueryCommunityPoolResponse:
     type: object
@@ -47815,6 +47823,10 @@ definitions:
               in the x/distribution module's reward mechanism.
           withdraw_addr_enabled:
             type: boolean
+          mca_tax:
+            type: string
+          mca_address:
+            type: string
     description: QueryParamsResponse is the response type for the Query/Params RPC method.
   cosmos.distribution.v1beta1.QueryValidatorCommissionResponse:
     type: object
