@@ -48,6 +48,12 @@ message Params {
     (amino.dont_omitempty) = true,
     (gogoproto.nullable)   = false
   ];
+
+  string mca_address = 6 [
+    (cosmos_proto.scalar)  = "cosmos.AddressString",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.AccAddress",
+    (gogoproto.nullable)   = false
+  ];
 }
 
 // ValidatorHistoricalRewards represents historical rewards for a validator.

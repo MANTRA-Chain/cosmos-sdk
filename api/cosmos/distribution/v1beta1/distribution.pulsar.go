@@ -23,6 +23,7 @@ var (
 	fd_Params_bonus_proposer_reward protoreflect.FieldDescriptor
 	fd_Params_withdraw_addr_enabled protoreflect.FieldDescriptor
 	fd_Params_mca_tax               protoreflect.FieldDescriptor
+	fd_Params_mca_address           protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -33,6 +34,7 @@ func init() {
 	fd_Params_bonus_proposer_reward = md_Params.Fields().ByName("bonus_proposer_reward")
 	fd_Params_withdraw_addr_enabled = md_Params.Fields().ByName("withdraw_addr_enabled")
 	fd_Params_mca_tax = md_Params.Fields().ByName("mca_tax")
+	fd_Params_mca_address = md_Params.Fields().ByName("mca_address")
 }
 
 var _ protoreflect.Message = (*fastReflection_Params)(nil)
@@ -130,6 +132,12 @@ func (x *fastReflection_Params) Range(f func(protoreflect.FieldDescriptor, proto
 			return
 		}
 	}
+	if x.McaAddress != "" {
+		value := protoreflect.ValueOfString(x.McaAddress)
+		if !f(fd_Params_mca_address, value) {
+			return
+		}
+	}
 }
 
 // Has reports whether a field is populated.
@@ -155,6 +163,8 @@ func (x *fastReflection_Params) Has(fd protoreflect.FieldDescriptor) bool {
 		return x.WithdrawAddrEnabled != false
 	case "cosmos.distribution.v1beta1.Params.mca_tax":
 		return x.McaTax != ""
+	case "cosmos.distribution.v1beta1.Params.mca_address":
+		return x.McaAddress != ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.Params"))
@@ -181,6 +191,8 @@ func (x *fastReflection_Params) Clear(fd protoreflect.FieldDescriptor) {
 		x.WithdrawAddrEnabled = false
 	case "cosmos.distribution.v1beta1.Params.mca_tax":
 		x.McaTax = ""
+	case "cosmos.distribution.v1beta1.Params.mca_address":
+		x.McaAddress = ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.Params"))
@@ -212,6 +224,9 @@ func (x *fastReflection_Params) Get(descriptor protoreflect.FieldDescriptor) pro
 	case "cosmos.distribution.v1beta1.Params.mca_tax":
 		value := x.McaTax
 		return protoreflect.ValueOfString(value)
+	case "cosmos.distribution.v1beta1.Params.mca_address":
+		value := x.McaAddress
+		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.Params"))
@@ -242,6 +257,8 @@ func (x *fastReflection_Params) Set(fd protoreflect.FieldDescriptor, value proto
 		x.WithdrawAddrEnabled = value.Bool()
 	case "cosmos.distribution.v1beta1.Params.mca_tax":
 		x.McaTax = value.Interface().(string)
+	case "cosmos.distribution.v1beta1.Params.mca_address":
+		x.McaAddress = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.Params"))
@@ -272,6 +289,8 @@ func (x *fastReflection_Params) Mutable(fd protoreflect.FieldDescriptor) protore
 		panic(fmt.Errorf("field withdraw_addr_enabled of message cosmos.distribution.v1beta1.Params is not mutable"))
 	case "cosmos.distribution.v1beta1.Params.mca_tax":
 		panic(fmt.Errorf("field mca_tax of message cosmos.distribution.v1beta1.Params is not mutable"))
+	case "cosmos.distribution.v1beta1.Params.mca_address":
+		panic(fmt.Errorf("field mca_address of message cosmos.distribution.v1beta1.Params is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.Params"))
@@ -294,6 +313,8 @@ func (x *fastReflection_Params) NewField(fd protoreflect.FieldDescriptor) protor
 	case "cosmos.distribution.v1beta1.Params.withdraw_addr_enabled":
 		return protoreflect.ValueOfBool(false)
 	case "cosmos.distribution.v1beta1.Params.mca_tax":
+		return protoreflect.ValueOfString("")
+	case "cosmos.distribution.v1beta1.Params.mca_address":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
@@ -383,6 +404,10 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
+		l = len(x.McaAddress)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -411,6 +436,13 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.McaAddress) > 0 {
+			i -= len(x.McaAddress)
+			copy(dAtA[i:], x.McaAddress)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.McaAddress)))
+			i--
+			dAtA[i] = 0x32
 		}
 		if len(x.McaTax) > 0 {
 			i -= len(x.McaTax)
@@ -646,6 +678,38 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
 				x.McaTax = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 6:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field McaAddress", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.McaAddress = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
@@ -6678,6 +6742,7 @@ type Params struct {
 	BonusProposerReward string `protobuf:"bytes,3,opt,name=bonus_proposer_reward,json=bonusProposerReward,proto3" json:"bonus_proposer_reward,omitempty"`
 	WithdrawAddrEnabled bool   `protobuf:"varint,4,opt,name=withdraw_addr_enabled,json=withdrawAddrEnabled,proto3" json:"withdraw_addr_enabled,omitempty"`
 	McaTax              string `protobuf:"bytes,5,opt,name=mca_tax,json=mcaTax,proto3" json:"mca_tax,omitempty"`
+	McaAddress          string `protobuf:"bytes,6,opt,name=mca_address,json=mcaAddress,proto3" json:"mca_address,omitempty"`
 }
 
 func (x *Params) Reset() {
@@ -6733,6 +6798,13 @@ func (x *Params) GetWithdrawAddrEnabled() bool {
 func (x *Params) GetMcaTax() string {
 	if x != nil {
 		return x.McaTax
+	}
+	return ""
+}
+
+func (x *Params) GetMcaAddress() string {
+	if x != nil {
+		return x.McaAddress
 	}
 	return ""
 }
@@ -7286,7 +7358,7 @@ var file_cosmos_distribution_v1beta1_distribution_proto_rawDesc = []byte{
 	0x6f, 0x74, 0x6f, 0x1a, 0x19, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x5f, 0x70, 0x72, 0x6f, 0x74,
 	0x6f, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x11,
 	0x61, 0x6d, 0x69, 0x6e, 0x6f, 0x2f, 0x61, 0x6d, 0x69, 0x6e, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x22, 0xeb, 0x03, 0x0a, 0x06, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x5b, 0x0a, 0x0d,
+	0x6f, 0x22, 0xdb, 0x04, 0x0a, 0x06, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x5b, 0x0a, 0x0d,
 	0x63, 0x6f, 0x6d, 0x6d, 0x75, 0x6e, 0x69, 0x74, 0x79, 0x5f, 0x74, 0x61, 0x78, 0x18, 0x01, 0x20,
 	0x01, 0x28, 0x09, 0x42, 0x36, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x1b, 0x63, 0x6f, 0x73,
 	0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x4c,
@@ -7314,7 +7386,14 @@ var file_cosmos_distribution_v1beta1_distribution_proto_rawDesc = []byte{
 	0x1f, 0x1b, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d,
 	0x61, 0x74, 0x68, 0x2e, 0x4c, 0x65, 0x67, 0x61, 0x63, 0x79, 0x44, 0x65, 0x63, 0xd2, 0xb4, 0x2d,
 	0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x44, 0x65, 0x63, 0xa8, 0xe7, 0xb0, 0x2a, 0x01,
-	0x52, 0x06, 0x6d, 0x63, 0x61, 0x54, 0x61, 0x78, 0x3a, 0x25, 0x8a, 0xe7, 0xb0, 0x2a, 0x20, 0x63,
+	0x52, 0x06, 0x6d, 0x63, 0x61, 0x54, 0x61, 0x78, 0x12, 0x6e, 0x0a, 0x0b, 0x6d, 0x63, 0x61, 0x5f,
+	0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x42, 0x4d, 0xc8,
+	0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x2d, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f,
+	0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2d,
+	0x73, 0x64, 0x6b, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x41, 0x63, 0x63, 0x41, 0x64, 0x64,
+	0x72, 0x65, 0x73, 0x73, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41,
+	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x0a, 0x6d, 0x63,
+	0x61, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x3a, 0x25, 0x8a, 0xe7, 0xb0, 0x2a, 0x20, 0x63,
 	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x78, 0x2f, 0x64, 0x69, 0x73, 0x74,
 	0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2f, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x22,
 	0xd6, 0x01, 0x0a, 0x1a, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x48, 0x69, 0x73,
