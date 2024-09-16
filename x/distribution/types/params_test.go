@@ -128,6 +128,8 @@ func TestParams_ValidateBasic(t *testing.T) {
 			p := types.Params{
 				CommunityTax:        tt.fields.CommunityTax,
 				WithdrawAddrEnabled: tt.fields.WithdrawAddrEnabled,
+				McaTax:              tt.fields.McaTax,
+				McaAddress:          tt.fields.McaAddress,
 			}
 			if err := p.ValidateBasic(); (err != nil) != tt.wantErr {
 				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)
