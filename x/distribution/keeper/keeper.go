@@ -216,3 +216,18 @@ func (k Keeper) FundCommunityPool(ctx context.Context, amount sdk.Coins, sender 
 	feePool.CommunityPool = feePool.CommunityPool.Add(sdk.NewDecCoinsFromCoins(amount...)...)
 	return k.FeePool.Set(ctx, feePool)
 }
+
+// GetMCAPoolBalance returns the current balance of the MCA pool
+func (k Keeper) GetMCAPoolBalance(ctx context.Context) (sdk.Coins, error) {
+	params, err := k.Params.Get(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	mcaAddress, err := sdk.AccAddressFromBech32(params.McaAddress)
+	if err != nil {
+		return nil, err
+	}
+
+	return k.bankKeeper.GetAllBalances(ctx, mcaAddress), nil
+}

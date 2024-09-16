@@ -370,3 +370,23 @@ func (k Querier) CommunityPool(ctx context.Context, req *types.QueryCommunityPoo
 
 	return &types.QueryCommunityPoolResponse{Pool: pool.CommunityPool}, nil
 }
+
+// MCAPool queries the MCA pool information.
+func (k Keeper) MCAPool(c context.Context, _ *types.QueryMCAPoolRequest) (*types.QueryMCAPoolResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	balance, err := k.GetMCAPoolBalance(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	params, err := k.Params.Get(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &types.QueryMCAPoolResponse{
+		Balance: balance,
+		Address: params.McaAddress,
+	}, nil
+}
