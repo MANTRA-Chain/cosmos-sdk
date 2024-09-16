@@ -238,7 +238,7 @@ func (suite *KeeperTestSuite) mockDelegateCoins(ctx context.Context, acc, mAcc s
 	if ok {
 		suite.authKeeper.EXPECT().SetAccount(ctx, vacc)
 	}
-	suite.authKeeper.EXPECT().GetAccount(ctx, acc.GetAddress()).Return(acc)
+	suite.authKeeper.EXPECT().GetAccount(ctx, acc.GetAddress()).Return(acc).Times(2)
 	suite.authKeeper.EXPECT().GetAccount(ctx, mAcc.GetAddress()).Return(mAcc)
 }
 
@@ -1454,9 +1454,10 @@ func (suite *KeeperTestSuite) TestMsgMultiSendEvents() {
 	event2.Attributes = append(
 		event2.Attributes,
 		abci.EventAttribute{Key: banktypes.AttributeKeyRecipient, Value: accAddrs[2].String()},
-		abci.EventAttribute{Key: banktypes.AttributeKeySender, Value: accAddrs[0].String()},
-		abci.EventAttribute{Key: sdk.AttributeKeyAmount, Value: newCoins.String()},
 	)
+	event2.Attributes = append(
+		event2.Attributes,
+		abci.EventAttribute{Key: sdk.AttributeKeyAmount, Value: newCoins.String()})
 	event3 := sdk.Event{
 		Type:       banktypes.EventTypeTransfer,
 		Attributes: []abci.EventAttribute{},
@@ -1464,7 +1465,9 @@ func (suite *KeeperTestSuite) TestMsgMultiSendEvents() {
 	event3.Attributes = append(
 		event3.Attributes,
 		abci.EventAttribute{Key: banktypes.AttributeKeyRecipient, Value: accAddrs[3].String()},
-		abci.EventAttribute{Key: banktypes.AttributeKeySender, Value: accAddrs[0].String()},
+	)
+	event3.Attributes = append(
+		event3.Attributes,
 		abci.EventAttribute{Key: sdk.AttributeKeyAmount, Value: newCoins2.String()},
 	)
 	// events are shifted due to the funding account events
@@ -1686,18 +1689,22 @@ func (suite *KeeperTestSuite) TestDelegateCoins_Invalid() {
 
 	origCoins := sdk.NewCoins(newFooCoin(100))
 	delCoins := sdk.NewCoins(newFooCoin(50))
+	acc0 := authtypes.NewBaseAccountWithAddress(accAddrs[0])
 
 	suite.authKeeper.EXPECT().GetAccount(ctx, holderAcc.GetAddress()).Return(nil)
 	require.Error(suite.bankKeeper.DelegateCoins(ctx, accAddrs[0], holderAcc.GetAddress(), delCoins))
 
 	suite.authKeeper.EXPECT().GetAccount(ctx, holderAcc.GetAddress()).Return(holderAcc)
+	suite.authKeeper.EXPECT().GetAccount(ctx, acc0.GetAddress()).Return(acc0)
 	invalidCoins := sdk.Coins{sdk.Coin{Denom: "fooDenom", Amount: math.NewInt(-50)}}
 	require.Error(suite.bankKeeper.DelegateCoins(ctx, accAddrs[0], holderAcc.GetAddress(), invalidCoins))
 
 	suite.authKeeper.EXPECT().GetAccount(ctx, holderAcc.GetAddress()).Return(holderAcc)
+	suite.authKeeper.EXPECT().GetAccount(ctx, acc0.GetAddress()).Return(acc0)
 	require.Error(suite.bankKeeper.DelegateCoins(ctx, accAddrs[0], holderAcc.GetAddress(), delCoins))
 
 	suite.authKeeper.EXPECT().GetAccount(ctx, holderAcc.GetAddress()).Return(holderAcc)
+	suite.authKeeper.EXPECT().GetAccount(ctx, acc0.GetAddress()).Return(acc0)
 	require.Error(suite.bankKeeper.DelegateCoins(ctx, accAddrs[0], holderAcc.GetAddress(), origCoins.Add(origCoins...)))
 }
 
