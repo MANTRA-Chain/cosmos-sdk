@@ -41,6 +41,25 @@ func validateCommunityTax(i interface{}) error {
 	return nil
 }
 
+func validateMcaTax(i interface{}) error {
+	v, ok := i.(math.LegacyDec)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if v.IsNil() {
+		return fmt.Errorf("mca tax must be not nil")
+	}
+	if v.IsNegative() {
+		return fmt.Errorf("mca tax must be positive: %s", v)
+	}
+	if v.GT(math.LegacyOneDec()) {
+		return fmt.Errorf("mca tax too large: %s", v)
+	}
+
+	return nil
+}
+
 func validateWithdrawAddrEnabled(i interface{}) error {
 	_, ok := i.(bool)
 	if !ok {
