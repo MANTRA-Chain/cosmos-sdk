@@ -774,7 +774,7 @@ func TestMsgUpdateParams(t *testing.T) {
 					BaseProposerReward:  math.LegacyZeroDec(),
 					BonusProposerReward: math.LegacyZeroDec(),
 					WithdrawAddrEnabled: withdrawAddrEnabled,
-					McaTax:              math.LegacyNewDecWithPrec(1, 1),
+					McaTax:              math.LegacyNewDecWithPrec(40, 2),
 					McaAddress:          "cosmos15m77x4pe6w9vtpuqm22qxu0ds7vn4ehz9dd9u2",
 				},
 			},
