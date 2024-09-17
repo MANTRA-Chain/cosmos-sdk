@@ -13,70 +13,100 @@ import (
 )
 
 // AllocateTokens performs reward and fee distribution to all validators based
-// on the F1 fee distribution specification.
+// on the F1 fee distribution specification, with MCA tax deducted before community tax.
 func (k Keeper) AllocateTokens(ctx context.Context, totalPreviousPower int64, bondedVotes []abci.VoteInfo) error {
-	// fetch and clear the collected fees for distribution, since this is
-	// called in BeginBlock, collected fees will be from the previous block
-	// (and distributed to the previous proposer)
+	// Fetch and clear the collected fees for distribution.
 	feeCollector := k.authKeeper.GetModuleAccount(ctx, k.feeCollectorName)
 	feesCollectedInt := k.bankKeeper.GetAllBalances(ctx, feeCollector.GetAddress())
 	feesCollected := sdk.NewDecCoinsFromCoins(feesCollectedInt...)
 
-	// transfer collected fees to the distribution module account
+	// Transfer collected fees to the distribution module account.
 	err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, k.feeCollectorName, types.ModuleName, feesCollectedInt)
 	if err != nil {
 		return err
 	}
 
-	// temporary workaround to keep CanWithdrawInvariant happy
-	// general discussions here: https://github.com/cosmos/cosmos-sdk/issues/2906#issuecomment-441867634
+	// Get the current fee pool.
 	feePool, err := k.FeePool.Get(ctx)
 	if err != nil {
 		return err
 	}
 
-	if totalPreviousPower == 0 {
-		feePool.CommunityPool = feePool.CommunityPool.Add(feesCollected...)
-		return k.FeePool.Set(ctx, feePool)
+	// Deduct MCA tax first.
+	mcaTaxRate, err := k.GetMcaTax(ctx)
+	if err != nil {
+		return err
 	}
+	mcaTaxAmount := feesCollected.MulDecTruncate(mcaTaxRate)
+	remainingAfterMca := feesCollected.Sub(mcaTaxAmount)
 
-	// calculate fraction allocated to validators
-	remaining := feesCollected
-	communityTax, err := k.GetCommunityTax(ctx)
+	// Get the MCA address from the params.
+	params, err := k.Params.Get(ctx)
+	if err != nil {
+		return err
+	}
+	mcaAddressStr := params.McaAddress
+
+	mcaAddress, err := sdk.AccAddressFromBech32(mcaAddressStr)
+	if err != nil {
+		return err
+	}
+	mcaTaxCoins, leftoverMcaTax := mcaTaxAmount.TruncateDecimal()
+	err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, mcaAddress, mcaTaxCoins)
 	if err != nil {
 		return err
 	}
 
-	voteMultiplier := math.LegacyOneDec().Sub(communityTax)
-	feeMultiplier := feesCollected.MulDecTruncate(voteMultiplier)
+	// Deduct community tax from the remaining funds after MCA tax.
+	communityTaxRate, err := k.GetCommunityTax(ctx)
+	if err != nil {
+		return err
+	}
+	communityTaxAmount := remainingAfterMca.MulDecTruncate(communityTaxRate)
+	remainingAfterCommunityTax := remainingAfterMca.Sub(communityTaxAmount)
 
-	// allocate tokens proportionally to voting power
-	//
-	// TODO: Consider parallelizing later
-	//
-	// Ref: https://github.com/cosmos/cosmos-sdk/pull/3099#discussion_r246276376
+	// Add the community tax to the community pool.
+	feePool.CommunityPool = feePool.CommunityPool.Add(communityTaxAmount...)
+
+	// If there is no validator power, add the remaining funds to the community pool and return.
+	if totalPreviousPower == 0 {
+		feePool.CommunityPool = feePool.CommunityPool.Add(remainingAfterCommunityTax...)
+		return k.FeePool.Set(ctx, feePool)
+	}
+
+	// Distribute the remaining tokens to validators based on voting power.
+	totalDistributed := sdk.NewDecCoins()
 	for _, vote := range bondedVotes {
 		validator, err := k.stakingKeeper.ValidatorByConsAddr(ctx, vote.Validator.Address)
 		if err != nil {
 			return err
 		}
 
-		// TODO: Consider micro-slashing for missing votes.
-		//
-		// Ref: https://github.com/cosmos/cosmos-sdk/issues/2525#issuecomment-430838701
+		// Calculate the fraction of power for each validator.
 		powerFraction := math.LegacyNewDec(vote.Validator.Power).QuoTruncate(math.LegacyNewDec(totalPreviousPower))
-		reward := feeMultiplier.MulDecTruncate(powerFraction)
+		reward := remainingAfterCommunityTax.MulDecTruncate(powerFraction)
 
+		// Allocate tokens to the validator.
 		err = k.AllocateTokensToValidator(ctx, validator, reward)
 		if err != nil {
 			return err
 		}
 
-		remaining = remaining.Sub(reward)
+		totalDistributed = totalDistributed.Add(reward...)
 	}
 
-	// allocate community funding
-	feePool.CommunityPool = feePool.CommunityPool.Add(remaining...)
+	// Any leftover due to rounding is added to the community pool.
+	leftover := remainingAfterCommunityTax.Sub(totalDistributed)
+	if !leftover.IsZero() {
+		feePool.CommunityPool = feePool.CommunityPool.Add(leftover...)
+	}
+
+	// Add leftover MCA tax to the community pool.
+	if !leftoverMcaTax.IsZero() {
+		feePool.CommunityPool = feePool.CommunityPool.Add(leftoverMcaTax...)
+	}
+
+	// Update the fee pool.
 	return k.FeePool.Set(ctx, feePool)
 }
 
