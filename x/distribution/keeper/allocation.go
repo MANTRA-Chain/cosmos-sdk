@@ -12,6 +12,8 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
+// AllocateTokens performs reward and fee distribution to all validators based
+// on the F1 fee distribution specification, with MCA tax deducted before community tax.
 func (k Keeper) AllocateTokens(ctx context.Context, totalPreviousPower int64, bondedVotes []abci.VoteInfo) error {
 	// Fetch and clear the collected fees for distribution.
 	feeCollector := k.authKeeper.GetModuleAccount(ctx, k.feeCollectorName)
@@ -30,38 +32,38 @@ func (k Keeper) AllocateTokens(ctx context.Context, totalPreviousPower int64, bo
 		return err
 	}
 
-	// Get the params
+	// Deduct MCA tax first.
+	mcaTaxRate, err := k.GetMcaTax(ctx)
+	if err != nil {
+		return err
+	}
+	mcaTaxAmount := feesCollected.MulDecTruncate(mcaTaxRate)
+	remainingAfterMca := feesCollected.Sub(mcaTaxAmount)
+
+	// Get the MCA address from the params.
 	params, err := k.Params.Get(ctx)
 	if err != nil {
 		return err
 	}
+	mcaAddressStr := params.McaAddress
 
-	remainingFees := feesCollected
-
-	// Apply MCA tax if it's set
-	if !params.McaTax.IsNil() && params.McaTax.IsPositive() && params.McaAddress != "" {
-		mcaTaxAmount := feesCollected.MulDecTruncate(params.McaTax)
-		remainingFees = feesCollected.Sub(mcaTaxAmount)
-
-		mcaAddress, err := sdk.AccAddressFromBech32(params.McaAddress)
-		if err != nil {
-			return err
-		}
-		mcaTaxCoins, leftoverMcaTax := mcaTaxAmount.TruncateDecimal()
-		err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, mcaAddress, mcaTaxCoins)
-		if err != nil {
-			return err
-		}
-
-		// Add leftover MCA tax to the community pool
-		if !leftoverMcaTax.IsZero() {
-			feePool.CommunityPool = feePool.CommunityPool.Add(leftoverMcaTax...)
-		}
+	mcaAddress, err := sdk.AccAddressFromBech32(mcaAddressStr)
+	if err != nil {
+		return err
+	}
+	mcaTaxCoins, leftoverMcaTax := mcaTaxAmount.TruncateDecimal()
+	err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, mcaAddress, mcaTaxCoins)
+	if err != nil {
+		return err
 	}
 
-	// Deduct community tax
-	communityTaxAmount := remainingFees.MulDecTruncate(params.CommunityTax)
-	remainingAfterCommunityTax := remainingFees.Sub(communityTaxAmount)
+	// Deduct community tax from the remaining funds after MCA tax.
+	communityTaxRate, err := k.GetCommunityTax(ctx)
+	if err != nil {
+		return err
+	}
+	communityTaxAmount := remainingAfterMca.MulDecTruncate(communityTaxRate)
+	remainingAfterCommunityTax := remainingAfterMca.Sub(communityTaxAmount)
 
 	// Add the community tax to the community pool.
 	feePool.CommunityPool = feePool.CommunityPool.Add(communityTaxAmount...)
@@ -97,6 +99,11 @@ func (k Keeper) AllocateTokens(ctx context.Context, totalPreviousPower int64, bo
 	leftover := remainingAfterCommunityTax.Sub(totalDistributed)
 	if !leftover.IsZero() {
 		feePool.CommunityPool = feePool.CommunityPool.Add(leftover...)
+	}
+
+	// Add leftover MCA tax to the community pool.
+	if !leftoverMcaTax.IsZero() {
+		feePool.CommunityPool = feePool.CommunityPool.Add(leftoverMcaTax...)
 	}
 
 	// Update the fee pool.

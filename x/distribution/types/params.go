@@ -14,8 +14,8 @@ func DefaultParams() Params {
 		BaseProposerReward:  math.LegacyZeroDec(),            // deprecated
 		BonusProposerReward: math.LegacyZeroDec(),            // deprecated
 		WithdrawAddrEnabled: true,
-		//		McaTax:              math.LegacyNewDecWithPrec(40, 2),                // 40%
-		//		McaAddress:          "cosmos15m77x4pe6w9vtpuqm22qxu0ds7vn4ehz9dd9u2", // TODO: change this to the actual mca address
+		McaTax:              math.LegacyNewDecWithPrec(40, 2),                // 40%
+		McaAddress:          "cosmos15m77x4pe6w9vtpuqm22qxu0ds7vn4ehz9dd9u2", // TODO: change this to the actual mca address
 	}
 }
 
@@ -61,6 +61,9 @@ func validateMcaTax(i interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
+	if v.IsNil() {
+		return fmt.Errorf("mca tax must be not nil")
+	}
 	if v.IsNegative() {
 		return fmt.Errorf("mca tax must be positive: %s", v)
 	}
