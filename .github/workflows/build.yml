@@ -2,6 +2,14 @@ name: Build SimApp
 #  This workflow is run on pushes to main & every Pull Requests where a .go, .mod, .sum have been changed
 on:
   pull_request:
+    paths:
+      - "**/*.go"
+      - "go.mod"
+      - "go.sum"
+      - "**/go.mod"
+      - "**/go.sum"
+      - "**/Makefile"
+      - "Makefile"
   merge_group:
   push:
     branches:
@@ -21,10 +29,10 @@ jobs:
       matrix:
         go-arch: ["amd64", "arm", "arm64"]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-go@v4
         with:
-          go-version: "1.21"
+          go-version: "1.23"
           check-latest: true
       - uses: technote-space/get-diff-action@v6.1.2
         id: git_diff
