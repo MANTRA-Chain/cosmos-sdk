@@ -5,7 +5,7 @@ go 1.23
 toolchain go1.23.1
 
 require (
-	cosmossdk.io/errors v1.0.0
+	cosmossdk.io/errors v1.0.1
 	cosmossdk.io/log v1.4.1
 	cosmossdk.io/math v1.3.0
 	github.com/cometbft/cometbft v0.38.12
