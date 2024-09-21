@@ -6,6 +6,12 @@ on:
       - main
       - release/**
   pull_request:
+    paths:
+      - "**/*.go"
+      - "go.mod"
+      - "go.sum"
+      - "**/go.mod"
+      - "**/go.sum"
   workflow_dispatch:
 
 jobs:
