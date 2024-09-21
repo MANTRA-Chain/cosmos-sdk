@@ -2,6 +2,7 @@ name: Sims Nightly (Long)
 # Release Sims workflow runs long-lived (multi-seed & large block size) simulations
 # This workflow only runs mightly at 8am UTC and on releases
 on:
+  workflow_dispatch:
   schedule:
     - cron: "0 8 * * *"
   release:
