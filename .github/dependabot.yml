@@ -18,7 +18,7 @@ updates:
       interval: weekly
     # DevRel should review docs updates
     assignees:
-      - "julienrbrt"
+      - "g-mantra"
 
   - package-ecosystem: gomod
     directory: "/"
