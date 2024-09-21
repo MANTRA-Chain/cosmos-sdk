@@ -49,7 +49,7 @@ jobs:
         uses: rtCamp/action-slack-notify@v2.3.0
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_CHANNEL: ${{ vars.SLACK_NOTIFICATION_CHANNEL || 'tech-general' }}
+          SLACK_CHANNEL: ${{ env.SLACK_NOTIFICATION_CHANNEL || vars.SLACK_NOTIFICATION_CHANNEL || 'tech-general' }}
           SLACK_USERNAME: ${{ github.event.repository.name }} Release Bot
           SLACK_ICON: ${{ vars.SLACK_ICON || 'https://avatars.githubusercontent.com/t/5997665?size=64' }}
           SLACK_COLOR: good
