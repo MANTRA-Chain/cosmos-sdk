@@ -6,15 +6,24 @@ on:
       - release/**
   pull_request:
   merge_group:
+  workflow_dispatch:
+
 permissions:
   contents: read
+  # Optional: allow read access to pull request. Use with `only-new-issues` option.
+  # pull-requests: read
+
 jobs:
   golangci:
     name: golangci-lint
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go: [stable]
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-go@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
         with:
           go-version: "1.23"
           check-latest: true
@@ -26,7 +35,7 @@ jobs:
             **/Makefile
             .golangci.yml
       - name: run linting (long)
-        if: env.GIT_DIFF
+        if: github.event_name == 'workflow_dispatch' || env.GIT_DIFF
         id: lint_long
         run: |
           echo "restore me"
