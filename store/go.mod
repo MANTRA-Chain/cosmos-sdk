@@ -5,18 +5,18 @@ go 1.23
 toolchain go1.23.1
 
 require (
-	cosmossdk.io/errors v1.0.0
+	cosmossdk.io/errors v1.0.1
 	cosmossdk.io/log v1.4.1
 	cosmossdk.io/math v1.3.0
 	github.com/cometbft/cometbft v0.38.12
 	github.com/cosmos/cosmos-db v1.0.2
 	github.com/cosmos/gogoproto v1.7.0
-	github.com/cosmos/iavl v1.2.0
+	github.com/cosmos/iavl v1.3.0
 	github.com/cosmos/ics23/go v0.11.0
 	github.com/golang/mock v1.6.0
 	github.com/golang/protobuf v1.5.4 // indirect
-	github.com/hashicorp/go-hclog v1.5.0
-	github.com/hashicorp/go-metrics v0.5.1
+	github.com/hashicorp/go-hclog v1.6.3
+	github.com/hashicorp/go-metrics v0.5.3
 	github.com/hashicorp/go-plugin v1.6.1
 	github.com/hashicorp/golang-lru v1.0.2
 	github.com/spf13/cast v1.6.0 // indirect
@@ -29,6 +29,7 @@ require (
 )
 
 require (
+	cosmossdk.io/core v0.12.1-0.20240725072823-6a2d039e1212 // indirect
 	github.com/DataDog/zstd v1.5.5 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/btcsuite/btcd/btcec/v2 v2.3.4 // indirect
@@ -41,7 +42,7 @@ require (
 	github.com/cockroachdb/tokenbucket v0.0.0-20230807174530-cc333fc44b06 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.2.0 // indirect
-	github.com/emicklei/dot v1.6.1 // indirect
+	github.com/emicklei/dot v1.6.2 // indirect
 	github.com/fatih/color v1.15.0 // indirect
 	github.com/getsentry/sentry-go v0.27.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
