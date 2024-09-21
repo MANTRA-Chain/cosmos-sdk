@@ -8,6 +8,9 @@ updates:
     schedule:
       interval: daily
       time: "01:00"
+    ignore:
+      - dependency-name: "actions/labeler"
+        versions: [">= 5"]
 
   - package-ecosystem: npm
     directory: "/docs"
@@ -15,7 +18,7 @@ updates:
       interval: daily
     # DevRel should review docs updates
     assignees:
-      - "julienrbrt"
+      - "g-mantra"
 
   - package-ecosystem: gomod
     directory: "/"
