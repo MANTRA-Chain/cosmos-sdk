@@ -1,6 +1,18 @@
 name: "Dependency Review"
 on:
   pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+    paths:
+      - "**/*.go"
+      - "go.mod"
+      - "go.sum"
+      - "**/go.mod"
+      - "**/go.sum"
+      - "**/Makefile"
+      - "Makefile"
   merge_group:
 
 permissions:
