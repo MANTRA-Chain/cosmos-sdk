@@ -6,6 +6,11 @@ on:
       - opened
       - edited
       - synchronize
+    paths:
+      - "**/*.proto"
+      - "**/*.go"
+      - "go.mod"
+      - "go.sum"
 
 jobs:
   main:

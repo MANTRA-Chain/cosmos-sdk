@@ -1,10 +1,18 @@
 # Staticmajor: Static analyzer to catch leaking resources & other bad code patterns
 name: Detect leaking resources and bad code patterns
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
+      - release/**
   pull_request:
+    paths:
+      - "**/*.go"
+      - "go.mod"
+      - "go.sum"
+      - "**/go.mod"
+      - "**/go.sum"
   workflow_dispatch:
 
 jobs:
