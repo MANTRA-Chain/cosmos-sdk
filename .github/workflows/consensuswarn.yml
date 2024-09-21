@@ -6,6 +6,10 @@ on:
       - opened
       - edited
       - synchronize
+    paths:
+      - "**/*.go"
+      - "go.mod"
+      - "go.sum"
 
 jobs:
   main:
