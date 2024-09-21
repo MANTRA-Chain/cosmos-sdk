@@ -1,0 +1,42 @@
+name: ✨ Feature Request
+description: Create a Proposal to Request a Feature
+title: "[Feature]: "
+labels: ["T:feature-request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        # Guidelines for Submitting a Feature Request
+
+        _✰  Thanks for proposing a potential new and exciting feature! ✰    
+        Before smashing the submit button please review the template.
+        Word of caution: poorly thought-out proposals may be rejected 
+        without deliberation._
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Brief
+      description: Short, concise description of the proposed feature.
+      placeholder: Summary of new feature or enhancement.
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Definition
+      description: Why do we need this feature? 
+      placeholder: |
+        What problems may be addressed by introducing this feature? 
+        What benefits does the SDK stand to gain by including this feature?
+        Are there any disadvantages of including this feature?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: Detailed description of requirements of implementation.
+      placeholder: |
+        Requirements or Technical Review of Implementation; Checklists and Acceptance Criteria.
+
