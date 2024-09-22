@@ -17,10 +17,15 @@ import (
 // Linux-only backend options.
 const BackendKeyctl = "keyctl"
 
+// KeyctlScopeUser sets the keyctl scope to "user".
 func KeyctlScopeUser(options *Options)        { setKeyctlScope(options, "user") }
+// KeyctlScopeUserSession sets the keyctl scope to "usersession".
 func KeyctlScopeUserSession(options *Options) { setKeyctlScope(options, "usersession") }
+// KeyctlScopeSession sets the keyctl scope to "session".
 func KeyctlScopeSession(options *Options)     { setKeyctlScope(options, "session") }
+// KeyctlScopeProcess sets the keyctl scope to "process".
 func KeyctlScopeProcess(options *Options)     { setKeyctlScope(options, "process") }
+// KeyctlScopeThread sets the keyctl scope to "thread".
 func KeyctlScopeThread(options *Options)      { setKeyctlScope(options, "thread") }
 
 // Options define the options of the Keyring.
