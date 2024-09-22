@@ -30,7 +30,6 @@ func KeyctlScopeThread(options *Options)      { setKeyctlScope(options, "thread"
 
 // Options define the options of the Keyring.
 type Options struct {
-type Options struct {
 	// SupportedAlgos is the list of supported signing algorithms for the keyring.
 	SupportedAlgos SigningAlgoList
 	// SupportedAlgosLedger is the list of supported signing algorithms for the Ledger.
