@@ -572,4 +572,9 @@ func TestHooks(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, countTrackBeforeSend, expNextCount)
 	expNextCount++
+
+	err = s.BankKeeper.InputOutputCoins(ctx, types.Input{Address: addr1.String(), Coins: triggerTrackSendAmount}, []types.Output{{Address: addr2.String(), Coins: triggerTrackSendAmount}})
+	require.NoError(t, err)
+	require.Equal(t, countTrackBeforeSend, expNextCount)
+	expNextCount++
 }
