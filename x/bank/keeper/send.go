@@ -60,7 +60,7 @@ type BaseSendKeeper struct {
 	ak           types.AccountKeeper
 	storeService store.KVStoreService
 	logger       log.Logger
-	hooks        types.BankHooks
+	hooks        *types.MultiBankHooks
 
 	// list of addresses that are restricted from receiving transactions
 	blockedAddrs map[string]bool
@@ -93,18 +93,13 @@ func NewBaseSendKeeper(
 		authority:       authority,
 		logger:          logger,
 		sendRestriction: newSendRestriction(),
+		hooks:           types.NewMultiBankHooks(),
 	}
 }
 
 // SetHooks Set the bank hooks
-func (k BaseSendKeeper) SetHooks(bh types.BankHooks) BaseSendKeeper {
-	if k.hooks != nil {
-		panic("cannot set bank hooks twice")
-	}
-
-	k.hooks = bh
-
-	return k
+func (k BaseSendKeeper) AppendHooks(bh types.BankHooks) {
+	k.hooks.Append(bh)
 }
 
 // AppendSendRestriction adds the provided SendRestrictionFn to run after previously provided restrictions.
