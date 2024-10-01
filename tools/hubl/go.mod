@@ -5,7 +5,7 @@ go 1.23
 toolchain go1.23.1
 
 require (
-	cosmossdk.io/api v0.7.5
+	cosmossdk.io/api v0.7.6
 	cosmossdk.io/client/v2 v2.0.0-beta.5
 	cosmossdk.io/errors v1.0.1
 	github.com/cockroachdb/errors v1.11.3
