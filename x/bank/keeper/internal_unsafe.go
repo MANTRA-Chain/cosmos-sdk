@@ -7,5 +7,5 @@ import "github.com/cosmos/cosmos-sdk/x/bank/types"
 //
 // WARNING: this function should only be used in tests.
 func UnsafeSetHooks(k *BaseKeeper, h types.BankHooks) {
-	k.hooks = h
+	k.hooks.Append(h)
 }
