@@ -253,3 +253,12 @@ message QueryCommunityPoolResponse {
     (amino.dont_omitempty)   = true
   ];
 }
+
+// QueryMCAPoolRequest is the request type for the Query/MCAPool RPC method.
+message QueryMCAPoolRequest {}
+
+// QueryMCAPoolResponse is the response type for the Query/MCAPool RPC method.
+message QueryMCAPoolResponse {
+  repeated cosmos.base.v1beta1.Coin balance = 1 [(gogoproto.nullable) = false];
+  string                            address = 2;
+}

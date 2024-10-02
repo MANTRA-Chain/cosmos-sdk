@@ -50,6 +50,8 @@ func TestGRPCParams(t *testing.T) {
 					BaseProposerReward:  math.LegacyZeroDec(),
 					BonusProposerReward: math.LegacyZeroDec(),
 					WithdrawAddrEnabled: true,
+					McaTax:              math.LegacyNewDecWithPrec(1, 1),
+					McaAddress:          "cosmos15m77x4pe6w9vtpuqm22qxu0ds7vn4ehz9dd9u2",
 				}
 
 				assert.NilError(t, f.distrKeeper.Params.Set(f.sdkCtx, params))
