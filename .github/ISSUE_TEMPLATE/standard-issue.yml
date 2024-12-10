@@ -1,0 +1,32 @@
+name: 📋 Github Issue
+description: Create a Development Task/User Story
+title: "[Issue]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        # Guidelines for Submitting a Bug Report
+
+        _✰  Thanks for opening an issue! ✰    
+        Before smashing the submit button please review the template.
+        Word of caution: poorly thought-out proposals may be rejected 
+        without deliberation._
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Brief
+      description: Short, concise description of the proposed feature/changes to the repository.
+      placeholder: What are the user needs? How could this solution fix the user facing problem?
+    validations:
+      required: true
+  - type: textarea
+    id: requirements
+    attributes:
+      label: Requirements
+      description: Craft Requirements and/or checklist of acceptance criteria to complete this work.
+      placeholder: What tasks need to be completed to fulfill the brief noted above? Are there any specific functions that are required?
+    validations:
+      required: true
+
