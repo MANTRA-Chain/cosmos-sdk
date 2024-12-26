@@ -3,7 +3,7 @@ project_name: cosmos-sdk
 
 release:
   github:
-    owner: cosmos
+    owner: MANTRA-Chain
     name: cosmos-sdk
 
 builds:
