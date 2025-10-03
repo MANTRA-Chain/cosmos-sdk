@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	Query_Grants_FullMethodName        = "/cosmos.authz.v1beta1.Query/Grants"
+	Query_GrantsAll_FullMethodName     = "/cosmos.authz.v1beta1.Query/GrantsAll"
 	Query_GranterGrants_FullMethodName = "/cosmos.authz.v1beta1.Query/GranterGrants"
 	Query_GranteeGrants_FullMethodName = "/cosmos.authz.v1beta1.Query/GranteeGrants"
 )
@@ -32,6 +33,8 @@ const (
 type QueryClient interface {
 	// Returns list of `Authorization`, granted to the grantee by the granter.
 	Grants(ctx context.Context, in *QueryGrantsRequest, opts ...grpc.CallOption) (*QueryGrantsResponse, error)
+	// Returns list of `Authorization`, granted to the grantee by the granter.
+	GrantsAll(ctx context.Context, in *QueryGrantsAllRequest, opts ...grpc.CallOption) (*QueryGrantsResponse, error)
 	// GranterGrants returns list of `GrantAuthorization`, granted by granter.
 	GranterGrants(ctx context.Context, in *QueryGranterGrantsRequest, opts ...grpc.CallOption) (*QueryGranterGrantsResponse, error)
 	// GranteeGrants returns a list of `GrantAuthorization` by grantee.
@@ -50,6 +53,16 @@ func (c *queryClient) Grants(ctx context.Context, in *QueryGrantsRequest, opts .
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(QueryGrantsResponse)
 	err := c.cc.Invoke(ctx, Query_Grants_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) GrantsAll(ctx context.Context, in *QueryGrantsAllRequest, opts ...grpc.CallOption) (*QueryGrantsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(QueryGrantsResponse)
+	err := c.cc.Invoke(ctx, Query_GrantsAll_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -84,6 +97,8 @@ func (c *queryClient) GranteeGrants(ctx context.Context, in *QueryGranteeGrantsR
 type QueryServer interface {
 	// Returns list of `Authorization`, granted to the grantee by the granter.
 	Grants(context.Context, *QueryGrantsRequest) (*QueryGrantsResponse, error)
+	// Returns list of `Authorization`, granted to the grantee by the granter.
+	GrantsAll(context.Context, *QueryGrantsAllRequest) (*QueryGrantsResponse, error)
 	// GranterGrants returns list of `GrantAuthorization`, granted by granter.
 	GranterGrants(context.Context, *QueryGranterGrantsRequest) (*QueryGranterGrantsResponse, error)
 	// GranteeGrants returns a list of `GrantAuthorization` by grantee.
@@ -100,6 +115,9 @@ type UnimplementedQueryServer struct{}
 
 func (UnimplementedQueryServer) Grants(context.Context, *QueryGrantsRequest) (*QueryGrantsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Grants not implemented")
+}
+func (UnimplementedQueryServer) GrantsAll(context.Context, *QueryGrantsAllRequest) (*QueryGrantsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GrantsAll not implemented")
 }
 func (UnimplementedQueryServer) GranterGrants(context.Context, *QueryGranterGrantsRequest) (*QueryGranterGrantsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GranterGrants not implemented")
@@ -142,6 +160,24 @@ func _Query_Grants_Handler(srv interface{}, ctx context.Context, dec func(interf
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).Grants(ctx, req.(*QueryGrantsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_GrantsAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGrantsAllRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).GrantsAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_GrantsAll_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).GrantsAll(ctx, req.(*QueryGrantsAllRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -192,6 +228,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Grants",
 			Handler:    _Query_Grants_Handler,
+		},
+		{
+			MethodName: "GrantsAll",
+			Handler:    _Query_GrantsAll_Handler,
 		},
 		{
 			MethodName: "GranterGrants",

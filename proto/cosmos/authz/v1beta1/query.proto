@@ -15,6 +15,11 @@ service Query {
     option (google.api.http).get = "/cosmos/authz/v1beta1/grants";
   }
 
+  // Returns list of `Authorization`, granted to the grantee by the granter.
+  rpc GrantsAll(QueryGrantsAllRequest) returns (QueryGrantsResponse) {
+    option (google.api.http).get = "/cosmos/authz/v1beta1/grants_all";
+  }
+
   // GranterGrants returns list of `GrantAuthorization`, granted by granter.
   rpc GranterGrants(QueryGranterGrantsRequest) returns (QueryGranterGrantsResponse) {
     option (cosmos_proto.method_added_in) = "cosmos-sdk 0.46";
@@ -36,6 +41,12 @@ message QueryGrantsRequest {
   string msg_type_url = 3;
   // pagination defines an pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 4;
+}
+
+// QueryGrantsAllRequest is the request type for the Query/GrantsAll RPC method.
+message QueryGrantsAllRequest {
+  // pagination defines an pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
 // QueryGrantsResponse is the response type for the Query/Authorizations RPC method.

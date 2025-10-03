@@ -18,6 +18,41 @@ import (
 
 var _ authz.QueryServer = Keeper{}
 
+func (k Keeper) GrantsAll(ctx context.Context, req *authz.QueryGrantsAllRequest) (*authz.QueryGrantsResponse, error) {
+	if req == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "empty request")
+	}
+
+	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+	grantsStore := prefix.NewStore(store, GrantKey)
+
+	authorizations, pageRes, err := query.GenericFilteredPaginate(k.cdc, grantsStore, req.Pagination, func(key []byte, auth *authz.Grant) (*authz.Grant, error) {
+		auth1, err := auth.GetAuthorization()
+		if err != nil {
+			return nil, err
+		}
+
+		authorizationAny, err := codectypes.NewAnyWithValue(auth1)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, err.Error())
+		}
+		return &authz.Grant{
+			Authorization: authorizationAny,
+			Expiration:    auth.Expiration,
+		}, nil
+	}, func() *authz.Grant {
+		return &authz.Grant{}
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &authz.QueryGrantsResponse{
+		Grants:     authorizations,
+		Pagination: pageRes,
+	}, nil
+}
+
 // Grants implements the Query/Grants gRPC method.
 // It returns grants for a granter-grantee pair. If msg type URL is set, it returns grants only for that msg type.
 func (k Keeper) Grants(ctx context.Context, req *authz.QueryGrantsRequest) (*authz.QueryGrantsResponse, error) {
