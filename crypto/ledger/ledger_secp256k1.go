@@ -90,6 +90,11 @@ func SetSkipDERConversion() {
 	options.skipDERConversion = true
 }
 
+// Set the skip DER Conversion requirement to default false
+func SetDERConversion() {
+	options.skipDERConversion = false
+}
+
 // NewPrivKeySecp256k1Unsafe will generate a new key and store the public key for later use.
 //
 // This function is marked as unsafe as it will retrieve a pubkey without user verification.
