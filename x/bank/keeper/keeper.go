@@ -116,6 +116,11 @@ func (k BaseKeeper) WithMintCoinsRestriction(check types.MintingRestrictionFn) B
 	return k
 }
 
+func (k BaseKeeper) WithBlockedAddrs(blockedAddrs map[string]bool) BaseKeeper {
+	k.blockedAddrs = blockedAddrs
+	return k
+}
+
 // DelegateCoins performs delegation by deducting amt coins from an account with
 // address addr. For vesting accounts, delegations amounts are tracked for both
 // vesting and vested coins. The coins are then transferred from the delegator
