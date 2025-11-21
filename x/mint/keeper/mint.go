@@ -54,24 +54,17 @@ func DefaultMintFn(ic types.InflationCalculationFn) MintFn {
 		maxSupply := params.MaxSupply
 		totalSupply := k.bankKeeper.GetSupply(ctx, params.MintDenom).Amount // fetch total supply from the bank module
 
-		// if maxSupply is not infinite, and minted coins exceeds maxSupply, mint the diff
+		// if maxSupply is not infinite, and minted coins exceeds maxSupply, adjust minted coins to be the diff
 		if !maxSupply.IsZero() && totalSupply.Add(mintedCoins.AmountOf(params.MintDenom)).GT(maxSupply) {
 			// calculate the difference between maxSupply and totalSupply
 			diff := maxSupply.Sub(totalSupply)
 			// mint the difference
-			diffCoin := sdk.NewCoin(params.MintDenom, diff)
-			diffCoins := sdk.NewCoins(diffCoin)
+			mintedCoins = sdk.NewCoins(sdk.NewCoin(params.MintDenom, diff))
+		}
 
-			// mint coins
-			if err := k.MintCoins(ctx, diffCoins); err != nil {
-				return err
-			}
-			mintedCoins = diffCoins
-		} else {
-			// mint coins
-			if err := k.MintCoins(ctx, mintedCoins); err != nil {
-				return err
-			}
+		// mint coins
+		if err := k.MintCoins(ctx, mintedCoins); err != nil {
+			return err
 		}
 
 		// send the minted coins to the fee collector account
