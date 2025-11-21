@@ -54,25 +54,20 @@ func DefaultMintFn(ic types.InflationCalculationFn) MintFn {
 		maxSupply := params.MaxSupply
 		totalSupply := k.bankKeeper.GetSupply(ctx, params.MintDenom).Amount // fetch total supply from the bank module
 
-		// if maxSupply is not infinite, check against max_supply parameter
-		if !maxSupply.IsZero() {
-			if totalSupply.Add(mintedCoins.AmountOf(params.MintDenom)).GT(maxSupply) {
-				// calculate the difference between maxSupply and totalSupply
-				diff := maxSupply.Sub(totalSupply)
-				// mint the difference
-				diffCoin := sdk.NewCoin(params.MintDenom, diff)
-				diffCoins := sdk.NewCoins(diffCoin)
+		// if maxSupply is not infinite, and minted coins exceeds maxSupply, mint the diff
+		if !maxSupply.IsZero() && totalSupply.Add(mintedCoins.AmountOf(params.MintDenom)).GT(maxSupply) {
+			// calculate the difference between maxSupply and totalSupply
+			diff := maxSupply.Sub(totalSupply)
+			// mint the difference
+			diffCoin := sdk.NewCoin(params.MintDenom, diff)
+			diffCoins := sdk.NewCoins(diffCoin)
 
-				// mint coins
-				if err := k.MintCoins(ctx, diffCoins); err != nil {
-					return err
-				}
-				mintedCoins = diffCoins
+			// mint coins
+			if err := k.MintCoins(ctx, diffCoins); err != nil {
+				return err
 			}
-		}
-
-		// mint coins if maxSupply is infinite or total staking supply is less than maxSupply
-		if maxSupply.IsZero() || totalSupply.Add(mintedCoins.AmountOf(params.MintDenom)).LT(maxSupply) {
+			mintedCoins = diffCoins
+		} else {
 			// mint coins
 			if err := k.MintCoins(ctx, mintedCoins); err != nil {
 				return err
